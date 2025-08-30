@@ -1,4 +1,4 @@
-# My own simple shell 
+# My own simple shell :shell:
 
 **Author**: Predescu Sebastian-Ion
 
@@ -17,9 +17,23 @@ git clone
 cd myshell
 ```
 
-## Build and Run
+## Build and Run :gear:
+
+The main `Makefile` is found in the `src` folder, but because of the other 
+`Makefile` found in root folder you can type `make run` anywhere in the project 
+and the shell will start.
 
 ## Supported commands
+
+Built-ins:
+
+|Command|Description|Exemple|
+|:-----:|:---------|:-----:|
+|help   |print a minimalist instructions list|help|
+|exit   |quit the shell| exit|
+|pwd    |print working directory| pwd|
+|cd     |print working directory| cd folder|
+
 
 ## LICENSE
 
