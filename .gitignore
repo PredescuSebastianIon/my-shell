@@ -1,0 +1,10 @@
+# IDE
+.vscode
+
+# binaries
+*.o
+myshell
+
+# temporary file
+*.swp
+*~
