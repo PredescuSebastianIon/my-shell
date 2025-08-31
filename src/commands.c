@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "commands.h"
 
@@ -9,11 +10,12 @@ int (*commands[])(char**) = {
     &myshell_help,
     &myshell_exit,
     &myshell_pwd,
-    &myshell_cd
+    &myshell_cd,
+    &myshell_time
 };
 
 char *commands_list[] = {
-    "help", "exit", "pwd", "cd"
+    "help", "exit", "pwd", "cd", "time"
 };
 
 int shell_built_commands = sizeof(commands_list) / sizeof(char*);
@@ -39,7 +41,7 @@ int myshell_exit(char **args)
 int myshell_pwd(char **args)
 {
     if (args[1]) {
-        fprintf(stderr, "Too many arguments for this command\n");
+        fprintf(stderr, "Too many arguments for 'pwd' command\n");
         return 1;
     }
 
@@ -56,11 +58,32 @@ int myshell_pwd(char **args)
 int myshell_cd(char **args)
 {
     if (!args[1]) {
-        fprintf(stderr, "Too few arguments for this for 'cd' command\n");
+        fprintf(stderr, "Too few arguments for 'cd' command\n");
         return 1;
     }
     if (chdir(args[1])) {
         perror("myshell error\n");
     }
+    return 1;
+}
+
+int myshell_time(char **args)
+{
+    if (args[1]) {
+        fprintf(stderr, "Too many arguments for 'time' command\n");
+    }
+
+    time_t t = time(NULL);
+    if (t == (time_t)-1) {
+        perror("myshell error\n");
+        return 1;
+    }
+
+    char *now = ctime(&t);
+    if (!now) {
+        perror("myshell error\n");
+        return 1;
+    }
+    printf("%s", now);
     return 1;
 }

@@ -33,6 +33,12 @@ Built-ins:
 |exit   |quit the shell| exit|
 |pwd    |print working directory| pwd|
 |cd     |print working directory| cd folder|
+|time   |print local date and time| time|
+
+### Background processes
+
+This shell also let's you run background processes. At the end of the typed 
+command, add `&` and the command will now run in background.
 
 
 ## LICENSE

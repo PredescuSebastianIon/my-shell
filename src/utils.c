@@ -25,7 +25,7 @@ char *read_line()
     return buffer;
 }
 
-char **split_line(char *line)
+char **split_line(char *line, int *cnt_arguments)
 {
     int buffsize = ARGSNUMS;
     char **args = malloc(buffsize * sizeof(char*));
@@ -57,11 +57,34 @@ char **split_line(char *line)
         perror("Allocation error");
         exit(EXIT_FAILURE);
     }
+    *cnt_arguments = pos - 1;
     return args;
 }
 
-int shell_launch(char **args)
+int shell_launch(char **args, int cnt_arguments)
 {
+    if (cnt_arguments <= 0 || args[0] == NULL)
+        return 1;
+
+    int lenght_last_arg = strlen(args[cnt_arguments - 1]);
+    if (lenght_last_arg == 0)
+        return 1;
+    int background_process = (args[cnt_arguments - 1][lenght_last_arg - 1] == '&' ? 1:0);
+    
+    if (background_process) {
+        if (lenght_last_arg == 1) {
+            args[cnt_arguments - 1] = NULL;
+            cnt_arguments--;
+        }
+        else {
+            args[cnt_arguments - 1][lenght_last_arg - 1] = '\0';
+            lenght_last_arg--;
+        }
+    }
+
+    if (cnt_arguments <= 0 || args[0] == NULL)
+        return 1;
+
     pid_t pid;
     int status = 0;
     pid = fork();
@@ -75,14 +98,19 @@ int shell_launch(char **args)
         perror("myshell error");
     }
     else {
-        do {
-            waitpid(pid, &status, WUNTRACED);
-        } while(!WIFEXITED(status) && !WIFSIGNALED(status));
+        if (background_process)
+            do {
+                waitpid(pid, &status, WNOHANG);
+            } while(!WIFEXITED(status) && !WIFSIGNALED(status));
+        else
+            do {
+                waitpid(pid, &status, WUNTRACED);
+            } while(!WIFEXITED(status) && !WIFSIGNALED(status));
     }
     return 1;
 }
 
-int execute_line(char **args)
+int execute_line(char **args, int cnt_arguments)
 {
     // check for empty line
     if (args[0] == NULL)
@@ -93,5 +121,5 @@ int execute_line(char **args)
             return commands[i](args);
     }
 
-    return shell_launch(args);
+    return shell_launch(args, cnt_arguments);
 }
